@@ -11,7 +11,7 @@ public class PlanetConverter {
 		
 		Planet planet = new Planet();
 		planet.setName(dto.getName());
-		planet.setTerrains(dto.getTerrains());
+		planet.setTerrain(dto.getTerrain());
 		planet.setClimate(dto.getClimate());
 		return planet;
 		

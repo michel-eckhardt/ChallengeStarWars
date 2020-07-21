@@ -12,8 +12,8 @@ public class PlanetDTO {
 	@NotNull
 	private String climate;
 	@NotNull
-	private String terrains;
-	@NotNull
+	private String terrain;
+	
 	private Integer movies;
 	
 }

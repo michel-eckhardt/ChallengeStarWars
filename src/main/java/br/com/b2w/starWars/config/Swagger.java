@@ -20,7 +20,7 @@ public class Swagger {
 	@Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).select()
-            .apis(RequestHandlerSelectors.basePackage("br.com.paulomoreira.starB2W.resource"))
+            .apis(RequestHandlerSelectors.basePackage("br.com.b2w.resource"))
             .paths(PathSelectors.any())
             .build()
             .apiInfo(apiInfo())

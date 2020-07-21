@@ -1,17 +1,17 @@
 package br.com.b2w.starWars.util;
 
-import java.util.List;
-
 import org.springframework.stereotype.Component;
+
+import br.com.b2w.starWars.gateway.dto.Response;
 
 @Component
 public final class PlanetHelper {
 	
 	
 
-	public static Integer isListEmpty(List<?> list) {
+	public static Integer isListEmpty(Response resp) {
 		
-		return list.isEmpty() || list == null? 0 : list.size();
+		return resp.getResults().isEmpty() || resp.getResults() == null? 0 : resp.getResults().get(0).getFilms().size();
 	}
 	
 	

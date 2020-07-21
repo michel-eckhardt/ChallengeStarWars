@@ -16,7 +16,7 @@ public class Planet {
 	
 	private String climate;
 	
-	private String terrains;
+	private String terrain;
 	
 	private Integer movies;
 
