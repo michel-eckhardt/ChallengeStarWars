@@ -6,12 +6,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.b2w.starWars.client.SwapiClient;
+import br.com.b2w.starWars.client.dto.ResultResponse;
 import br.com.b2w.starWars.dto.PlanetConverter;
 import br.com.b2w.starWars.dto.PlanetDTO;
-import br.com.b2w.starWars.gateway.SwapiGateway;
 import br.com.b2w.starWars.model.Planet;
 import br.com.b2w.starWars.repository.PlanetRepository;
-import br.com.b2w.starWars.util.PlanetHelper;
 
 @Service
 public class PlanetService {
@@ -20,7 +20,7 @@ public class PlanetService {
 	PlanetRepository planetRepository;
 
 	@Autowired
-	SwapiGateway swapiGateway;
+	SwapiClient swapiGateway;
 
 	@Autowired
 	PlanetConverter planetConverter;
@@ -31,10 +31,8 @@ public class PlanetService {
 			return null;
 		}
 
-		var totalMovies = this.checkForMovieAppearances(dto.getName());
-
 		Planet planet = planetConverter.toEntity(dto);
-		planet.setMovies(totalMovies);
+		planet.setMovies(checkMovies(dto.getName()));
 
 		return Optional.of(planetRepository.save(planet));
 
@@ -60,11 +58,31 @@ public class PlanetService {
 
 	}
 
-	public Integer checkForMovieAppearances(String planet) {
+	public Integer checkMovies(String planet) {
 		try {
-			var response = swapiGateway.findPlanetByName(planet);
+			int page = 1;
+			var response = swapiGateway.findPlanetByName(planet, page);
+			
+			if (response.getResults().size() <= 10 && response.getNext() == null) {
+				for (ResultResponse resultList : response.getResults()) {
+					if (resultList.getName().equals(planet)) {
+						return resultList.getFilms().size();
+					}
+				}
+			}
 
-			return PlanetHelper.isListEmpty(response);
+			while (response.getNext() != null) {
+
+				for (ResultResponse resultList : response.getResults()) {
+					if (resultList.getName().equals(planet)) {
+						return resultList.getFilms().size();
+					}
+				}
+				page++;
+				response = swapiGateway.findPlanetByName(planet, page);
+			}
+
+			return 0;
 
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());

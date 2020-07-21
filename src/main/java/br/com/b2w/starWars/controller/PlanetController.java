@@ -1,4 +1,4 @@
-package br.com.b2w.starWars.resource;
+package br.com.b2w.starWars.controller;
 
 import java.util.HashMap;
 import java.util.Optional;
