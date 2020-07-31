@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,10 +51,8 @@ public class PlanetController {
 
 				HashMap<String, String> body = new HashMap<>();
 				body.put(Constants.MESSAGE, Constants.PLANET_EXIST);
-
-				var responseIfPlanetNull = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-
-				return responseIfPlanetNull;
+				
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
 			}
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(planet);
@@ -114,20 +111,15 @@ public class PlanetController {
 		try {
 
 			Boolean isDeleted = planetService.deletePlanById(id);
+			HashMap<String, String> body = new HashMap<>();
 
 			if (!isDeleted) {
 
-				HashMap<String, String> body = new HashMap<>();
 				body.put(Constants.MESSAGE, Constants.PLANET_NOT_FOUND);
-
-				var responseIfWasNotDeleted = ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-
-				return responseIfWasNotDeleted;
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
 			}
 
-			HashMap<String, String> body = new HashMap<>();
 			body.put(Constants.MESSAGE, Constants.PLANET_DELETED);
-
 			return ResponseEntity.ok().body(body);
 
 		}

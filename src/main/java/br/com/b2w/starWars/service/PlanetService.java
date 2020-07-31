@@ -12,6 +12,7 @@ import br.com.b2w.starWars.dto.PlanetConverter;
 import br.com.b2w.starWars.dto.PlanetDTO;
 import br.com.b2w.starWars.model.Planet;
 import br.com.b2w.starWars.repository.PlanetRepository;
+import br.com.b2w.starWars.util.Validation;
 
 @Service
 public class PlanetService {
@@ -20,14 +21,18 @@ public class PlanetService {
 	PlanetRepository planetRepository;
 
 	@Autowired
-	SwapiClient swapiGateway;
+	SwapiClient swapiClient;
+	
+	@Autowired
+	Validation validation;
 
 	@Autowired
 	PlanetConverter planetConverter;
 
 	public Optional<Planet> savePlanet(PlanetDTO dto) {
 
-		if (isPlanetExist(dto.getName())) {
+	
+		if (validation.isPlanetExist(dto.getName())) {
 			return null;
 		}
 
@@ -43,14 +48,14 @@ public class PlanetService {
 	}
 
 	public Optional<Planet> findPlanetByID(String id) {
-
+		
 		return planetRepository.findById(id);
 
 	}
 
 	public Boolean deletePlanById(String id) {
 
-		if (isPlanetExist(id)) {
+		if (validation.isPlanetExist(id)) {
 			planetRepository.deleteById(id);
 			return true;
 		}
@@ -61,7 +66,7 @@ public class PlanetService {
 	public Integer checkMovies(String planet) {
 		try {
 			int page = 1;
-			var response = swapiGateway.findPlanetByName(planet, page);
+			var response = swapiClient.findPlanetByName(planet, page);
 			
 			if (response.getResults().size() <= 10 && response.getNext() == null) {
 				for (ResultResponse resultList : response.getResults()) {
@@ -79,7 +84,7 @@ public class PlanetService {
 					}
 				}
 				page++;
-				response = swapiGateway.findPlanetByName(planet, page);
+				response = swapiClient.findPlanetByName(planet, page);
 			}
 
 			return 0;
@@ -90,15 +95,6 @@ public class PlanetService {
 
 	}
 
-	public Boolean isPlanetExist(String param) {
 
-		if (planetRepository.findByName(param).isPresent()) {
-			return true;
-		} else if (planetRepository.findById(param).isPresent()) {
-			return true;
-		}
-		return false;
-
-	}
 
 }

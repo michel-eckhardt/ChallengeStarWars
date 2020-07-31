@@ -13,26 +13,27 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-
 @Configuration
 @EnableSwagger2
 public class Swagger {
-	@Bean
+	
+    @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).select()
-            .apis(RequestHandlerSelectors.basePackage("br.com.b2w.resource"))
-            .paths(PathSelectors.any())
-            .build()
-            .apiInfo(apiInfo())
-            .useDefaultResponseMessages(true);
+                .apis(RequestHandlerSelectors.basePackage("br.com.b2w.starWars.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(true);
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("StarWars REST API")
+                .description("This is an API to Star Wars Challenge.")
+                .version("1.0.0")
+                .extensions(Collections.emptyList())
+                .build();
     }
 	
-	private ApiInfo apiInfo() {
-		return new ApiInfoBuilder()
-			.title("Star Wars Planets API")
-			.description("This API is used to manage the planets of Star Wars.")
-			.version("1.0.0")
-			.extensions(Collections.emptyList())
-		.build();
-    }
 }

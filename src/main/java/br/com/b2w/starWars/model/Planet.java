@@ -3,8 +3,12 @@ package br.com.b2w.starWars.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 public class Planet {
@@ -19,5 +23,6 @@ public class Planet {
 	private String terrain;
 	
 	private Integer movies;
+
 
 }
