@@ -6,14 +6,14 @@
 * Name
 * Climates
 * Terrain
-* movies
+* Movies
 
 ### Functionalities
 
 * Add a planet
 * List planets
 * Find by planet name
-* find by ID
+* Find by ID
 * Delete planet
 
 ## Base URL
@@ -40,7 +40,7 @@ mvn test
 
 ## Swagger
 
-to check the endpoints, enter the swagger:
+To check the endpoints, enter the swagger:
 
 ```sh
 http://localhost:8080/starWars/swagger-ui.html#/
@@ -50,7 +50,7 @@ http://localhost:8080/starWars/swagger-ui.html#/
 
 ## Development setup
 
-the following libraries were used:
+The following libraries were used:
 
 -  Java 11; ✔️ 
 -  Apache Maven; ✔️ 
