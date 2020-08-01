@@ -1,14 +1,14 @@
-# Challenge Star Wars
+# Challenge Star Wars 🚀🌎
 > This application was developed with API REST architecture in order to manage planet data from the Star Wars movie.
 
-The api contains the following planet data:
+### The api contains the following planet data:
 
 * Name
 * Climates
 * Terrain
 * movies
 
-Functionalities
+### Functionalities
 
 * Add a planet
 * List planets
@@ -52,19 +52,19 @@ http://localhost:8080/starWars/swagger-ui.html#/
 
 the following libraries were used:
 
--  Java 11; 
--  Apache Maven; 
--  Spring Boot (2.3.1 Release); 
--  Swagger (2.9.2); 
--  Hibernate Validator (5.4.2 Final); 
--  Spring Boot Starter Data JPA (2.2.7 Release); 
--  Spring Boot Starter Data Mongodb (2.2.7 Release); 
--  Spring MOC (2.0.0);
--  Spring Boot DevTools (2.2.7 Release); 
--  Junit; 
--  Mock/Mockito; 
--  Open Feign (2.2.2 Release); 
--  LomBok (1.18.12). 
+-  Java 11; ✔️ 
+-  Apache Maven; ✔️ 
+-  Spring Boot (2.3.1 Release); ✔️ 
+-  Swagger (2.9.2); ✔️ 
+-  Hibernate Validator (5.4.2 Final); ✔️ 
+-  Spring Boot Starter Data JPA (2.2.7 Release); ✔️ 
+-  Spring Boot Starter Data Mongodb (2.2.7 Release); ✔️ 
+-  Spring MOC (2.0.0);✔️ 
+-  Spring Boot DevTools (2.2.7 Release); ✔️ 
+-  Junit; ✔️ 
+-  Mock/Mockito; ✔️ 
+-  Open Feign (2.2.2 Release); ✔️ 
+-  LomBok (1.18.12). ✔️ 
 
 ## Developer
 
