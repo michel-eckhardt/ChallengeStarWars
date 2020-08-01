@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.b2w.starWars.dto.PlanetConverter;
 import br.com.b2w.starWars.dto.PlanetDTO;
+import br.com.b2w.starWars.exception.PlanetBadRequestException;
+import br.com.b2w.starWars.exception.PlanetNotFoundException;
 import br.com.b2w.starWars.model.Planet;
 import br.com.b2w.starWars.service.PlanetService;
 import io.restassured.http.ContentType;
@@ -53,7 +55,7 @@ public class PlanetControllerTest {
 	public void returnSuccess_findPlanetById() {
 
 		when(this.planetService.findPlanetByID("1"))
-				.thenReturn(Optional.of(new Planet("1", "Test Planet", "terrain", "cold", 4)));
+				.thenReturn(new Planet("1", "Test Planet", "terrain", "cold", 4));
 
 		given().accept(ContentType.JSON).when().get("/v1/planet/{id}", "1").then().statusCode(HttpStatus.OK.value());
 	}
@@ -61,7 +63,7 @@ public class PlanetControllerTest {
 	@Test
 	public void returnNotFound_findPlanetById() {
 
-		when(this.planetService.findPlanetByID("2")).thenReturn(Optional.empty());
+		when(this.planetService.findPlanetByID("2")).thenThrow(new PlanetNotFoundException(PlanetNotFoundException.MESSAGES.PLANET_NOT_FOUND));
 
 		given().accept(ContentType.JSON).when().get("/v1/planet/{id}", "2").then()
 				.statusCode(HttpStatus.NOT_FOUND.value());
@@ -77,19 +79,7 @@ public class PlanetControllerTest {
 
 	@Test
 	public void returnSuccess_deletePlanet() {
-
-		when(this.planetService.deletePlanById("3")).thenReturn(true);
-
 		given().accept(ContentType.JSON).when().delete("/v1/planet/{id}", "3").then().statusCode(HttpStatus.OK.value());
-	}
-
-	@Test
-	public void returnNotFound_deletePlanet() {
-
-		when(this.planetService.deletePlanById("4")).thenReturn(false);
-
-		given().accept(ContentType.JSON).when().delete("/v1/planet/{id}", "4").then()
-				.statusCode(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -98,7 +88,7 @@ public class PlanetControllerTest {
 		PlanetDTO dto = new PlanetDTO("Planet Test","teste","teste",1);
 		
 		when(this.planetService.savePlanet(dto))
-		.thenReturn(Optional.of(new Planet("5","Planet Test","teste","teste",1)));
+		.thenReturn(new Planet("5","Planet Test","teste","teste",1));
 		
 		var payload = objectMapper.writeValueAsString(dto);
 	    mockMvc.perform(
@@ -113,7 +103,7 @@ public class PlanetControllerTest {
 		PlanetDTO dto = new PlanetDTO("Planet Test","teste","teste",1);
 		
 		when(this.planetService.savePlanet(dto))
-		.thenReturn(null);
+		.thenThrow(new PlanetBadRequestException(PlanetBadRequestException.MESSAGES.PLANET_EXIST));
 		var payload = objectMapper.writeValueAsString(dto);
 	    mockMvc.perform(
 	    		post("/v1/planet").contentType(MediaType.APPLICATION_JSON)

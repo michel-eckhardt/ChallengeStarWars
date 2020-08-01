@@ -10,9 +10,11 @@ import br.com.b2w.starWars.client.SwapiClient;
 import br.com.b2w.starWars.client.dto.ResultResponse;
 import br.com.b2w.starWars.dto.PlanetConverter;
 import br.com.b2w.starWars.dto.PlanetDTO;
+import br.com.b2w.starWars.exception.PlanetBadRequestException;
+import br.com.b2w.starWars.exception.PlanetNotFoundException;
+import br.com.b2w.starWars.exception.PlanetServerErrorException;
 import br.com.b2w.starWars.model.Planet;
 import br.com.b2w.starWars.repository.PlanetRepository;
-import br.com.b2w.starWars.util.Validation;
 
 @Service
 public class PlanetService {
@@ -22,44 +24,47 @@ public class PlanetService {
 
 	@Autowired
 	SwapiClient swapiClient;
-	
-	@Autowired
-	Validation validation;
 
 	@Autowired
 	PlanetConverter planetConverter;
 
-	public Optional<Planet> savePlanet(PlanetDTO dto) {
+	public Planet savePlanet(PlanetDTO dto) {
 
-	
-		if (validation.isPlanetExist(dto.getName())) {
-			return null;
+		isPlanetExistByName(dto.getName());
+
+		try {
+
+			Planet planet = planetConverter.toEntity(dto);
+			planet.setMovies(checkMovies(dto.getName()));
+			return Optional.of(planetRepository.save(planet)).orElseThrow(
+					() -> new PlanetServerErrorException(PlanetServerErrorException.MESSAGES.CREATE_ERROR));
+
+		} catch (PlanetServerErrorException e) {
+			throw new PlanetServerErrorException(e.getMessage());
 		}
-
-		Planet planet = planetConverter.toEntity(dto);
-		planet.setMovies(checkMovies(dto.getName()));
-
-		return Optional.of(planetRepository.save(planet));
-
 	}
 
 	public List<Planet> getAllPlanets() {
-		return planetRepository.findAll();
-	}
-
-	public Optional<Planet> findPlanetByID(String id) {
-		
-		return planetRepository.findById(id);
-
-	}
-
-	public Boolean deletePlanById(String id) {
-
-		if (validation.isPlanetExist(id)) {
-			planetRepository.deleteById(id);
-			return true;
+		try {
+			return planetRepository.findAll();
+		} catch (Exception e) {
+			throw new PlanetServerErrorException(PlanetServerErrorException.MESSAGES.FIND_ERROR);
 		}
-		return false;
+	}
+
+	public Planet findPlanetByID(String id) {
+		return planetRepository.findById(id)
+				.orElseThrow(() -> new PlanetNotFoundException(PlanetNotFoundException.MESSAGES.PLANET_NOT_FOUND));
+	}
+
+	public void deletePlanById(String id) {
+
+		isPlanetExistById(id);
+		try {
+			planetRepository.deleteById(id);
+		} catch (PlanetServerErrorException e) {
+			throw new PlanetServerErrorException(PlanetServerErrorException.MESSAGES.DELETE_ERROR);
+		}
 
 	}
 
@@ -67,7 +72,7 @@ public class PlanetService {
 		try {
 			int page = 1;
 			var response = swapiClient.findPlanetByName(planet, page);
-			
+
 			if (response.getResults().size() <= 10 && response.getNext() == null) {
 				for (ResultResponse resultList : response.getResults()) {
 					if (resultList.getName().equals(planet)) {
@@ -90,11 +95,24 @@ public class PlanetService {
 			return 0;
 
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			throw new PlanetServerErrorException(PlanetServerErrorException.MESSAGES.CLIENT_ERROR);
 		}
 
 	}
 
+	public void isPlanetExistByName(String param) {
 
+		if (planetRepository.findByName(param).isPresent()) {
+			throw new PlanetBadRequestException(PlanetBadRequestException.MESSAGES.PLANET_EXIST);
+		}
+
+	}
+
+	public void isPlanetExistById(String param) {
+
+		planetRepository.findById(param)
+				.orElseThrow(() -> new PlanetNotFoundException(PlanetNotFoundException.MESSAGES.PLANET_NOT_FOUND));
+
+	}
 
 }

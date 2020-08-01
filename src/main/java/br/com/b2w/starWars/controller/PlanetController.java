@@ -1,7 +1,6 @@
 package br.com.b2w.starWars.controller;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.b2w.starWars.dto.PlanetConverter;
 import br.com.b2w.starWars.dto.PlanetDTO;
-import br.com.b2w.starWars.exception.AttributeException;
-import br.com.b2w.starWars.model.Planet;
+import br.com.b2w.starWars.exception.PlanetBadRequestException;
+import br.com.b2w.starWars.exception.PlanetServerErrorException;
 import br.com.b2w.starWars.service.PlanetService;
 import br.com.b2w.starWars.util.Constants;
 import io.swagger.annotations.Api;
@@ -38,28 +37,20 @@ public class PlanetController {
 	@Autowired
 	PlanetConverter planetConverter;
 
+	HashMap<String, String> body = new HashMap<>();
+
 	@PostMapping
 	@ApiOperation(value = "Create Planet.")
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "Created Successfully."),
 			@ApiResponse(code = 400, message = "The planet exist or some attribute sent is null.") })
-	public ResponseEntity<?> createPlanet(@RequestBody @Valid PlanetDTO dto) throws AttributeException {
+	public ResponseEntity<?> createPlanet(@RequestBody @Valid PlanetDTO dto) {
 
-		Optional<Planet> planet = planetService.savePlanet(dto);
 		try {
-
-			if (planet == null) {
-
-				HashMap<String, String> body = new HashMap<>();
-				body.put(Constants.MESSAGE, Constants.PLANET_EXIST);
-				
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-			}
-
-			return ResponseEntity.status(HttpStatus.CREATED).body(planet);
-
-		} catch (Exception e) {
-
-			throw new RuntimeException(e.getMessage());
+			return ResponseEntity.status(HttpStatus.CREATED).body(planetService.savePlanet(dto));
+		} catch (PlanetServerErrorException e) {
+			throw new PlanetServerErrorException(e.getMessage());
+		} catch (PlanetBadRequestException e) {
+			throw new PlanetBadRequestException(e.getMessage());
 		}
 
 	}
@@ -69,12 +60,7 @@ public class PlanetController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Search Success."),
 			@ApiResponse(code = 404, message = "The list of planet is empty.") })
 	public ResponseEntity<?> findAllPlanets() {
-		try {
-			return ResponseEntity.ok().body(planetService.getAllPlanets());
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-
+		return ResponseEntity.ok().body(planetService.getAllPlanets());
 	}
 
 	@GetMapping(path = "/{id}")
@@ -82,24 +68,7 @@ public class PlanetController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Search Success."),
 			@ApiResponse(code = 404, message = "The list of planet was not found.") })
 	public ResponseEntity<?> findPlanetById(@PathVariable(value = "id") String id) {
-
-		try {
-			Optional<Planet> planet = planetService.findPlanetByID(id);
-
-			if (planet.isEmpty()) {
-
-				HashMap<String, String> body = new HashMap<>();
-				body.put(Constants.MESSAGE, Constants.PLANET_NOT_FOUND);
-
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-			}
-
-			return ResponseEntity.ok().body(planet);
-
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-
+		return ResponseEntity.ok().body(planetService.findPlanetByID(id));
 	}
 
 	@DeleteMapping(path = "/{id}")
@@ -108,26 +77,9 @@ public class PlanetController {
 			@ApiResponse(code = 404, message = "The planet was not found.") })
 	public ResponseEntity<?> deletePlanetById(@PathVariable(value = "id", required = true) String id) {
 
-		try {
-
-			Boolean isDeleted = planetService.deletePlanById(id);
-			HashMap<String, String> body = new HashMap<>();
-
-			if (!isDeleted) {
-
-				body.put(Constants.MESSAGE, Constants.PLANET_NOT_FOUND);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-			}
-
-			body.put(Constants.MESSAGE, Constants.PLANET_DELETED);
-			return ResponseEntity.ok().body(body);
-
-		}
-
-		catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-
+		planetService.deletePlanById(id);
+		body.put(Constants.MESSAGE, Constants.PLANET_DELETED);
+		return ResponseEntity.ok().body(body);
 	}
 
 }

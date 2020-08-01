@@ -14,7 +14,7 @@ import io.swagger.annotations.Api;
 @RequestMapping(path = "/health")
 @Api(value = "/v1", tags = "Health Check.")
 public class HealthController {
-	
+
 	@GetMapping
 	public ResponseEntity<?> healthcheck() {
 		Map<String, String> status = new HashMap<String, String>();
