@@ -1,12 +1,20 @@
 # Challenge Star Wars
 > This application was developed with API REST architecture in order to manage planet data from the Star Wars movie.
 
-A api contem os seguintes dados dos plantas:
+The api contains the following planet data:
 
 * Name
 * Climates
 * Terrain
 * movies
+
+Functionalities
+
+* Add a planet
+* List planets
+* Find by planet name
+* find by ID
+* Delete planet
 
 ## Base URL
 
@@ -73,7 +81,7 @@ the following libraries were used:
 
 ## Contributing
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
+1. Fork it (<https://github.com/michel-eckhardt/ChallengeStarWars>)
 2. Create your feature branch (`git checkout -b feature/update`)
 3. Commit your changes (`git commit -am 'Add some update'`)
 4. Push to the branch (`git push origin feature/update`)
