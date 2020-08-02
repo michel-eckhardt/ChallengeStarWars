@@ -10,7 +10,7 @@ services:
     networks: 
      - java-mongo-network
       
-  starWars:    
+  starwars:    
     build:
       dockerfile: ./Dockerfile
       context: .
@@ -22,11 +22,10 @@ services:
      - java-mongo-network
     depends_on:
      - mongodb
-  
+    
 volumes:
   my-mongo-volume:
-    
-       
+
 networks: 
   java-mongo-network:
     driver: bridge
