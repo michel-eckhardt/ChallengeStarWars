@@ -27,7 +27,7 @@ http://localhost:8080/starWars/
 To run the application with Docker it is necessary to have Docker installed.
 
 ```sh
-mvn package -DskipTests && docker-compose up -build
+mvn package -DskipTests && docker-compose up
 ```
 
 ## Test
