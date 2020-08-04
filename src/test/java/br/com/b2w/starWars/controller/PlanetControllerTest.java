@@ -79,7 +79,7 @@ public class PlanetControllerTest {
 
 	@Test
 	public void returnSuccess_deletePlanet() {
-		given().accept(ContentType.JSON).when().delete("/v1/planet/{id}", "3").then().statusCode(HttpStatus.OK.value());
+		given().accept(ContentType.JSON).when().delete("/v1/planet/{id}", "3").then().statusCode(HttpStatus.NO_CONTENT.value());
 	}
 
 	@Test
