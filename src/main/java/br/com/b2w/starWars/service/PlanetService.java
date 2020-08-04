@@ -39,7 +39,7 @@ public class PlanetService {
 			return Optional.of(planetRepository.save(planet)).orElseThrow(
 					() -> new PlanetServerErrorException(PlanetServerErrorException.MESSAGES.CREATE_ERROR));
 
-		} catch (PlanetServerErrorException e) {
+		} catch (Exception e) {
 			throw new PlanetServerErrorException(e.getMessage());
 		}
 	}
@@ -53,8 +53,15 @@ public class PlanetService {
 	}
 
 	public Planet findPlanetByID(String id) {
-		return planetRepository.findById(id)
-				.orElseThrow(() -> new PlanetNotFoundException(PlanetNotFoundException.MESSAGES.PLANET_NOT_FOUND));
+		try {
+			return planetRepository.findById(id)
+					.orElseThrow(() -> new PlanetNotFoundException(PlanetNotFoundException.MESSAGES.PLANET_NOT_FOUND));
+		} catch (PlanetNotFoundException e) {
+			throw new PlanetNotFoundException(PlanetNotFoundException.MESSAGES.PLANET_NOT_FOUND);
+		}catch (Exception e) {
+			throw new PlanetServerErrorException(PlanetServerErrorException.MESSAGES.FIND_ERROR);
+		} 
+		
 	}
 
 	public void deletePlanById(String id) {
@@ -62,7 +69,7 @@ public class PlanetService {
 		isPlanetExistById(id);
 		try {
 			planetRepository.deleteById(id);
-		} catch (PlanetServerErrorException e) {
+		} catch (Exception e) {
 			throw new PlanetServerErrorException(PlanetServerErrorException.MESSAGES.DELETE_ERROR);
 		}
 

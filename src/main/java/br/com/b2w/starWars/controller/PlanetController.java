@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.b2w.starWars.dto.PlanetConverter;
 import br.com.b2w.starWars.dto.PlanetDTO;
 import br.com.b2w.starWars.exception.PlanetBadRequestException;
+import br.com.b2w.starWars.exception.PlanetNotFoundException;
 import br.com.b2w.starWars.exception.PlanetServerErrorException;
 import br.com.b2w.starWars.service.PlanetService;
 import br.com.b2w.starWars.util.Constants;
@@ -48,9 +49,8 @@ public class PlanetController {
 		try {
 			return ResponseEntity.status(HttpStatus.CREATED).body(planetService.savePlanet(dto));
 		} catch (PlanetServerErrorException e) {
-			throw new PlanetServerErrorException(e.getMessage());
-		} catch (PlanetBadRequestException e) {
-			throw new PlanetBadRequestException(e.getMessage());
+			body.put(Constants.MESSAGE, e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
 		}
 
 	}
@@ -60,7 +60,12 @@ public class PlanetController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Search Success."),
 			@ApiResponse(code = 404, message = "The list of planet is empty.") })
 	public ResponseEntity<?> findAllPlanets() {
-		return ResponseEntity.ok().body(planetService.getAllPlanets());
+		try {
+			return ResponseEntity.ok().body(planetService.getAllPlanets());
+		} catch (Exception e) {
+			body.put(Constants.MESSAGE, e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
 	}
 
 	@GetMapping(path = "/{id}")
@@ -68,7 +73,15 @@ public class PlanetController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Search Success."),
 			@ApiResponse(code = 404, message = "The list of planet was not found.") })
 	public ResponseEntity<?> findPlanetById(@PathVariable(value = "id") String id) {
-		return ResponseEntity.ok().body(planetService.findPlanetByID(id));
+		try {
+			return ResponseEntity.ok().body(planetService.findPlanetByID(id));
+		} catch (PlanetNotFoundException e) {
+			body.put(Constants.MESSAGE, e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+		} catch (Exception e) {
+			body.put(Constants.MESSAGE, e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
 	}
 
 	@DeleteMapping(path = "/{id}")
@@ -76,10 +89,19 @@ public class PlanetController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Deleted Successfully."),
 			@ApiResponse(code = 404, message = "The planet was not found.") })
 	public ResponseEntity<?> deletePlanetById(@PathVariable(value = "id", required = true) String id) {
+		try {
 
-		planetService.deletePlanById(id);
-		body.put(Constants.MESSAGE, Constants.PLANET_DELETED);
-		return ResponseEntity.ok().body(body);
+			planetService.deletePlanById(id);
+			return ResponseEntity.noContent().build();
+
+		} catch (PlanetNotFoundException e) {
+			body.put(Constants.MESSAGE, e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+		} catch (PlanetServerErrorException e) {
+			body.put(Constants.MESSAGE, e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
+
 	}
 
 }
